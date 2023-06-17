@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
 import { GroupChatStack, UserLamdaStack } from '../stacks';
 
-const app = new cdk.App();
+const app = new App();
 
 const groupChatStack = new GroupChatStack(app, 'group-chat-stack', {
   env: { account: 'xxxxxxxxxxxx', region: 'us-east-1' }, // update aws account and region
