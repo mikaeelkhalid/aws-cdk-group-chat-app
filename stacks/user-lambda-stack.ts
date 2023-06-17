@@ -24,6 +24,7 @@ export class UserLamdaStack extends Stack {
     super(scope, id, props);
 
     const { groupChatGraphqlApi, groupChatTable, apiSchema } = props;
+
     const signingProfile = new SigningProfile(this, 'signing-profile', {
       platform: Platform.AWS_LAMBDA_SHA384_ECDSA,
     });
