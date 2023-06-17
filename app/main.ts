@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { GroupChatStack } from '../lib/group-chat-stack';
+import { GroupChatStack } from '../stacks/group-chat-stack';
 
 const app = new cdk.App();
 
