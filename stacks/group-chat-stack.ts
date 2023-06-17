@@ -1,18 +1,31 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import {
+  CfnDataSource,
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
+} from 'aws-cdk-lib/aws-appsync';
 import {
   AccountRecovery,
   UserPool,
   UserPoolClient,
   VerificationEmailStyle,
 } from 'aws-cdk-lib/aws-cognito';
+import {
+  AttributeType,
+  BillingMode,
+  ProjectionType,
+  StreamViewType,
+  Table,
+} from 'aws-cdk-lib/aws-dynamodb';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs';
 
 export class GroupChatStack extends Stack {
+  public readonly groupChatTable: Table;
   public readonly groupChatGraphqlApi: CfnGraphQLApi;
   public readonly apiSchema: CfnGraphQLSchema;
+  public readonly groupChatTableDatasource: CfnDataSource;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -87,11 +100,74 @@ export class GroupChatStack extends Stack {
       }
     );
 
-
     // graphql schema
-    this.apiSchema = new CfnGraphQLSchema(this, 'group-chat-graphql-api-schema', {
-      apiId: this.groupChatGraphqlApi.attrApiId,
-      definition: readFileSync('./schema/schema.graphql').toString(),
+    this.apiSchema = new CfnGraphQLSchema(
+      this,
+      'group-chat-graphql-api-schema',
+      {
+        apiId: this.groupChatGraphqlApi.attrApiId,
+        definition: readFileSync('./schema/schema.graphql').toString(),
+      }
+    );
+
+    // dynamo database
+    this.groupChatTable = new Table(this, 'group-chat-dynamodb-table', {
+      tableName: 'groupChatTable',
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'SK',
+        type: AttributeType.STRING,
+      },
+
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      stream: StreamViewType.NEW_IMAGE,
+
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    this.groupChatTable.addGlobalSecondaryIndex({
+      indexName: 'groupsCreatedByUser',
+      partitionKey: {
+        name: 'GSI1PK',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'GSI1SK',
+        type: AttributeType.STRING,
+      },
+
+      projectionType: ProjectionType.ALL,
+    });
+    this.groupChatTable.addGlobalSecondaryIndex({
+      indexName: 'getMessagesPerGroup',
+      partitionKey: {
+        name: 'GSI2PK',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'GSI2SK',
+        type: AttributeType.STRING,
+      },
+
+      projectionType: ProjectionType.ALL,
+    });
+
+    this.groupChatTable.addGlobalSecondaryIndex({
+      indexName: 'groupsUserBelongTo',
+      partitionKey: {
+        name: 'GSI3PK',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'GSI3SK',
+        type: AttributeType.STRING,
+      },
+
+      projectionType: ProjectionType.ALL,
     });
   }
 }
+
