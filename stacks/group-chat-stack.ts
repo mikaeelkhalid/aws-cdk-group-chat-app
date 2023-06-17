@@ -1,4 +1,4 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import {
   CfnDataSource,
   CfnGraphQLApi,
@@ -141,6 +141,7 @@ export class GroupChatStack extends Stack {
 
       projectionType: ProjectionType.ALL,
     });
+
     this.groupChatTable.addGlobalSecondaryIndex({
       indexName: 'getMessagesPerGroup',
       partitionKey: {
@@ -167,6 +168,22 @@ export class GroupChatStack extends Stack {
       },
 
       projectionType: ProjectionType.ALL,
+    });
+
+    // outputs
+    new CfnOutput(this, 'userpool-id', {
+      value: userPool.userPoolId,
+    });
+    new CfnOutput(this, 'userpool-client-id', {
+      value: userPoolClient.userPoolClientId,
+    });
+
+    new CfnOutput(this, 'graphQL-api-id', {
+      value: this.groupChatGraphqlApi.attrApiId,
+    });
+
+    new CfnOutput(this, 'graphQL-api-url', {
+      value: this.groupChatGraphqlApi.attrGraphQlUrl,
     });
   }
 }
