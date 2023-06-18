@@ -14,6 +14,7 @@ export const handler: AppSyncResolverHandler<
   let tableName = process.env.GroupChat_DB;
   const createdOn = Date.now().toString();
   const id: string = uuid();
+
   if (tableName === undefined) {
     logger.error(`Couldn't get the table name`);
     tableName = 'groupChatTable';
