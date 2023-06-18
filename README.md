@@ -1,14 +1,13 @@
-# Welcome to your CDK TypeScript project
+# Serverless Group Chat Application using AWS CDK
 
-This is a blank project for CDK development with TypeScript.
+This repo contain example of modern serverless group chat application using various AWS services like AWS CDK, AWS AppSync, and AWS Lambda.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+Since this app has multiple stacks and we intend on deploying all of them, we'll use the `--all` flag.
 
-## Useful commands
+`cdk synth --all` emits the synthesized CloudFormation templates for all stacks.
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+`cdk bootstrap` bootstrap the AWS environment if you're deploying CDK stack for the first time.
+
+`cdk deploy --all` deploy all stacks to your default AWS account/region
+
+Once deployed successfully, you should be able to see the graphql endpoint in your terminal.
