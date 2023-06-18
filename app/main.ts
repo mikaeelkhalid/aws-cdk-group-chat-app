@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App } from 'aws-cdk-lib';
-import { GroupChatStack, UserLamdaStack, GroupLambdaStack } from '../stacks';
+import {
+  GroupChatStack,
+  UserLamdaStack,
+  GroupLambdaStack,
+  MessageStack,
+} from '../stacks';
 
 const app = new App();
 
@@ -17,7 +22,15 @@ new UserLamdaStack(app, 'user-lambda-stack', {
 });
 
 new GroupLambdaStack(app, 'group-lambda-stack', {
-  env: { account: 'xxxxxxxxxxx', region: 'us-east-1' },
+  env: { account: 'xxxxxxxxxxx', region: 'us-east-1' }, // update aws account and region
+  groupChatTable: groupChatStack.groupChatTable,
+  apiSchema: groupChatStack.apiSchema,
+  groupChatGraphqlApi: groupChatStack.groupChatGraphqlApi,
+  groupChatDatasource: groupChatStack.groupChatTableDatasource,
+});
+
+new MessageStack(app, 'message-lambda-stack', {
+  env: { account: 'xxxxxxxxxx', region: 'us-east-1' }, // update aws account and region
   groupChatTable: groupChatStack.groupChatTable,
   apiSchema: groupChatStack.apiSchema,
   groupChatGraphqlApi: groupChatStack.groupChatGraphqlApi,
